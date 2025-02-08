@@ -1,5 +1,40 @@
 # zh_recogn中文语音识别
 
+> 在原项目的基础上增加docker支持。
+> 在原项目的基础上支持转换文件文本导出，方便直接使用。
+
+## 使用docker方式部署
+
+1. 下载源代码
+```
+git clone https://github.com/ssxu/zh_recogn.git
+```
+
+2. 进入项目目录
+```
+cd zh_recogn
+```
+
+3. 构建docker镜像
+```
+docker build -t zh_recogn .
+```
+
+4. 运行docker镜像
+```
+docker run -d -p 9933:9933 -v /root/.cache/modelscope:/root/.cache/modelscope -v /app/static/tmp:/app/static/tmp zh_recogn
+```
+
+5. 访问项目
+```
+http://127.0.0.1:9933
+```
+
+
+
+## 以下是原项目介绍
+
+--------------------------------
 >
 > 这是一个中文语音识别为字幕的项目，基于魔塔社区Paraformer模型。
 > 支持中文音频、中文视频转为srt字幕。提供 api 接口和简单界面
