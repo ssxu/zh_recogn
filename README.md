@@ -31,6 +31,9 @@ docker run -d -p 9933:9933 -v /root/.cache/modelscope:/root/.cache/modelscope -v
 http://127.0.0.1:9933
 ```
 
+## web界面
+![image](https://github.com/ssxu/zh_recogn/static/images/image.png)
+
 
 
 ## 以下是原项目介绍
