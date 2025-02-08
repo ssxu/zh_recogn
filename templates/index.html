@@ -55,6 +55,10 @@
             margin: 75px auto 50px;
         }
 
+        #result-text {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -84,7 +88,9 @@
     </div>
     <div id="content">
         <div class="layui-margin-1 layui-font-14 layui-font-gray">
-            基于魔塔社区 FunASR paraformer-zh 模型,仅支持中文, 若需多语言识别请查看 <a href="https://github.com/jianchang512/pyvideotrans" target="_blank">pyVideoTrans</a> 或 <a href="https://github.com/jianchang512/stt" target="_blank">stt</a>
+            基于魔塔社区 FunASR paraformer-zh 模型,仅支持中文, 若需多语言识别请查看 <a
+                href="https://github.com/jianchang512/pyvideotrans" target="_blank">pyVideoTrans</a> 或 <a
+                href="https://github.com/jianchang512/stt" target="_blank">stt</a>
         </div>
         <!-- 内容主体区域 -->
         <div class="layui-upload-drag layui-border-green" id="upload">
@@ -116,6 +122,16 @@
                         id="export-btn"
                 >导出字幕
                 </div>
+                <div
+                        class="layui-btn layui-btn-disabled"
+                        id="export-btn-text"
+                >导出文本
+                </div>
+                <div
+                        class="layui-btn layui-btn-disabled"
+                        id="export-btn-text-time"
+                >导出带时间文本
+                </div>
             </div>
 
         </form>
@@ -133,10 +149,24 @@
             ></textarea>
             </div>
         </div>
-        <div class="layui-margin-1 text-center layui-font-gray">若要在 <a href="https://pyvideotrans.com"
-                                                                           target="_blank">pyVideoTrans</a> 中使用，请将
-                <code>http://{{web_address}}</code> 填写在 "菜单-设置-zh_recogn中"
+
+        <div class="layui-card">
+            <div id="showtips" class="layui-hide layui-padding-1 layui-margin-1"></div>
+            <div class="layui-card-body text-contain" style="padding: 10px 0">
+            <textarea
+                    placeholder="识别结果在此显示"
+                    class="layui-textarea"
+                    id="result-text"
+                    readonly
+                    cols="30"
+                    rows="10"
+            ></textarea>
             </div>
+        </div>
+        <div class="layui-margin-1 text-center layui-font-gray">若要在 <a href="https://pyvideotrans.com"
+                                                                          target="_blank">pyVideoTrans</a> 中使用，请将
+            <code>http://{{ web_address }}</code> 填写在 "菜单-设置-zh_recogn中"
+        </div>
     </div>
 </div>
 
@@ -164,6 +194,8 @@
                 $('#showtips').removeClass('layui-hide').text('识别用时可能较久，请耐心等待...')
                 layindex1 = layer.load();
                 $('#export-btn').addClass('layui-btn-disabled')
+                $('#export-btn-text').addClass('layui-btn-disabled')
+                $('#export-btn-text-time').addClass('layui-btn-disabled')
             },
             done: function (res) {
                 $('#showtips').text('识别完成')
@@ -173,18 +205,23 @@
                     return false;
                 }
                 let txt = [];
+                let painTxt = []
                 res.data.forEach(it => {
                     txt.push(`${it['line']}\n${it['time']}\n${it['text']}`)
+                    painTxt.push(`${it['text']}`)
                 })
                 $('#result').val(txt.join("\n\n"));
+                $('#result-text').val(painTxt.join(""));
                 $('#export-btn').removeClass('layui-btn-disabled')
+                $('#export-btn-text').removeClass('layui-btn-disabled')
+                $('#export-btn-text-time').removeClass('layui-btn-disabled')
             }
         });
         $("#export-btn").click(function () {
             if ($(this).hasClass("layui-btn-disabled")) {
                 return;
             }
-            var str = $("#result").val().trim();
+            let str = $("#result").val().trim();
             if (!str) {
                 layer.alert("请先识别后再进行导出!",
                     {title: false}
@@ -192,14 +229,62 @@
                 return;
             }
             layer.msg('开始导出请稍等...');
-            var blob = new Blob([str], {
+            let blob = new Blob([str], {
                 type: 'text/plain'
             })
-            var url = URL.createObjectURL(blob)
-            var aEl = document.createElement('a')
+            let url = URL.createObjectURL(blob)
+            let aEl = document.createElement('a')
             aEl.href = url
             aEl.target = '_blank'
             aEl.download = '语音识别结果.srt'
+            aEl.click()
+            aEl.remove()
+            URL.revokeObjectURL(url)
+        });
+        $("#export-btn-text").click(function () {
+            if ($(this).hasClass("layui-btn-disabled")) {
+                return;
+            }
+            let str = $("#result-text").val().trim();
+            if (!str) {
+                layer.alert("请先识别后再进行导出!",
+                    {title: false}
+                );
+                return;
+            }
+            layer.msg('开始导出请稍等...');
+            let blob = new Blob([str], {
+                type: 'text/plain'
+            })
+            let url = URL.createObjectURL(blob)
+            let aEl = document.createElement('a')
+            aEl.href = url
+            aEl.target = '_blank'
+            aEl.download = '语音识别文本结果.txt'
+            aEl.click()
+            aEl.remove()
+            URL.revokeObjectURL(url)
+        });
+        $("#export-btn-text-time").click(function () {
+            if ($(this).hasClass("layui-btn-disabled")) {
+                return;
+            }
+            let str = $("#result").val().trim();
+            if (!str) {
+                layer.alert("请先识别后再进行导出!",
+                    {title: false}
+                );
+                return;
+            }
+            layer.msg('开始导出请稍等...');
+            let blob = new Blob([str], {
+                type: 'text/plain'
+            })
+            let url = URL.createObjectURL(blob)
+            let aEl = document.createElement('a')
+            aEl.href = url
+            aEl.target = '_blank'
+            aEl.download = '语音识别结果带时间戳.txt'
             aEl.click()
             aEl.remove()
             URL.revokeObjectURL(url)

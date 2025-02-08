@@ -1,3 +1,4 @@
+from flask_cors import cross_origin
 from funasr import AutoModel
 from flask import Flask, request, render_template, jsonify, send_from_directory
 import os
@@ -12,7 +13,6 @@ from waitress import serve
 import lib
 from lib import cfg, tool
 from lib.cfg import ROOT_DIR
-print('开始启动...')
 # 配置日志
 # 禁用 Werkzeug 默认的日志处理器
 log = logging.getLogger('werkzeug')
@@ -24,18 +24,14 @@ root_log = logging.getLogger()  # Flask的根日志记录器
 root_log.handlers = []
 root_log.setLevel(logging.WARNING)
 
-# 配置日志
-app.logger.setLevel(logging.WARNING)  # 设置日志级别为 INFO
-# 创建 RotatingFileHandler 对象，设置写入的文件路径和大小限制
-file_handler = RotatingFileHandler(os.path.join(ROOT_DIR, 'zh_recogn.log'), maxBytes=1024 * 1024, backupCount=5)
-# 创建日志的格式
+# 输出到 stdout 和 stderr
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.WARNING)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# 设置文件处理器的级别和格式
-file_handler.setLevel(logging.WARNING)
-file_handler.setFormatter(formatter)
-# 将文件处理器添加到日志记录器中
-app.logger.addHandler(file_handler)
+stream_handler.setFormatter(formatter)
+app.logger.addHandler(stream_handler)
 
+logging.info("system start")
 
 @app.route('/static/<path:filename>')
 def static_files(filename):
@@ -51,6 +47,7 @@ def index():
 
 
 @app.route('/api', methods=['GET', 'POST'])
+@cross_origin()
 def api():
     try:
         # 获取上传的文件
@@ -110,10 +107,10 @@ if __name__ == '__main__':
     http_server = None
     try:
         host = cfg.web_address.split(':')
-        print(f'url=http://{cfg.web_address}')
+        logging.info(f'url=http://{cfg.web_address}')
         threading.Thread(target=tool.openweb, args=(cfg.web_address,)).start()
-        print('启动成功')
+        logging.info('启动成功')
         serve(app, host=host[0], port=int(host[1]))
     except Exception as e:
-        print("error:" + str(e))
+        logging.error("error:" + str(e))
         app.logger.error(f"[app]start error:{str(e)}")
