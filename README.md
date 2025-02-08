@@ -32,7 +32,7 @@ http://127.0.0.1:9933
 ```
 
 ## web界面
-![image](https://github.com/ssxu/zh_recogn/static/images/image.png)
+![image](https://github.com/ssxu/zh_recogn/static/images/image.png?raw=true)
 
 
 
