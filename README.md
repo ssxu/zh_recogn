@@ -5,6 +5,17 @@
 > 在原项目的基础上支持转换文件文本导出，方便直接使用。
 
 ## 使用docker方式部署
+1. 下载docker镜像
+```
+docker pull ssxu90/zh_recogn:0.1
+```
+
+2. 运行docker镜像
+```
+docker run -d -p 9933:9933 -v /root/.cache/modelscope:/root/.cache/modelscope -v /app/static/tmp:/app/static/tmp ssxu90/zh_recogn:0.1
+```
+
+## 自行打包docker镜像部署
 
 1. 下载源代码
 ```
