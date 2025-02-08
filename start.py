@@ -1,4 +1,4 @@
-from flask_cors import cross_origin
+from flask_cors import CORS
 from funasr import AutoModel
 from flask import Flask, request, render_template, jsonify, send_from_directory
 import os
@@ -21,6 +21,7 @@ log.setLevel(logging.WARNING)
 app = Flask(__name__, static_folder=os.path.join(ROOT_DIR, 'static'), static_url_path='/static',
             template_folder=os.path.join(ROOT_DIR, 'templates'))
 root_log = logging.getLogger()  # Flask的根日志记录器
+CORS(app)
 root_log.handlers = []
 root_log.setLevel(logging.WARNING)
 
@@ -47,7 +48,6 @@ def index():
 
 
 @app.route('/api', methods=['GET', 'POST'])
-@cross_origin()
 def api():
     try:
         # 获取上传的文件

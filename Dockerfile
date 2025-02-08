@@ -23,6 +23,7 @@ RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/
 RUN pip3 install torch==2.3.0+cpu torchaudio==2.3.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 # 安装任何必需的 Python 包
 RUN python -m pip install --upgrade pip wheel
+RUN pip install -r requirements.txt
 
 # 暴露端口
 EXPOSE 9933
